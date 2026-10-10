@@ -22,6 +22,20 @@ Key design principles:
 
 *Source: [`Conversational_Insights_Architecture.drawio`](Conversational_Insights_Architecture.drawio). Edit the draw.io file and re-export the PNG when the architecture changes.*
 
+## Request Flow
+
+1. The data scientist submits a question in the app. The app stores the exchange in conversation history (MongoDB).
+2. **Input Guardrails** validate the request. A blocked request returns to the app with a message.
+3. The **Agent Orchestrator** loads short-term and long-term memory, plans the work and dispatches tasks through the **MCP Gateway**.
+4. The specialist agents run through their MCP interfaces:
+   - **Hybrid Search** retrieves relevant content and schema context from Milvus by combining semantic search with BM25-based keyword search.
+   - **SQL Generator** produces SQL, and **SQL Executor** runs it on Postgres behind the SQL Guard.
+   - **Log Generator** reads logs from BigQuery when log analysis is needed.
+5. The **Aggregator Agent** combines the agent results into a single answer.
+6. The **Evaluator Agent** checks the answer.
+   - **Pass:** the answer goes through **Output Guardrails** and returns to the user as search results.
+   - **Fail:** the **Budget Manager** checks the remaining budget. If budget remains, the orchestrator retries with the evaluator's feedback. If not, a fallback response goes through Output Guardrails.
+   
 ## Components
 
 ### Entry and safety
@@ -75,20 +89,6 @@ All LLM calls from the orchestrator, agents, aggregator and evaluator go through
 ### Observability and audit
 
 Distributed tracing, token and cost metrics and an audit log cover all components. Token and cost metrics also feed the Budget Manager.
-
-## Request Flow
-
-1. The data scientist submits a question in the app. The app stores the exchange in conversation history (MongoDB).
-2. **Input Guardrails** validate the request. A blocked request returns to the app with a message.
-3. The **Agent Orchestrator** loads short-term and long-term memory, plans the work and dispatches tasks through the **MCP Gateway**.
-4. The specialist agents run through their MCP interfaces:
-   - **Hybrid Search** retrieves relevant content and schema context from Milvus by combining semantic search with BM25-based keyword search.
-   - **SQL Generator** produces SQL, and **SQL Executor** runs it on Postgres behind the SQL Guard.
-   - **Log Generator** reads logs from BigQuery when log analysis is needed.
-5. The **Aggregator Agent** combines the agent results into a single answer.
-6. The **Evaluator Agent** checks the answer.
-   - **Pass:** the answer goes through **Output Guardrails** and returns to the user as search results.
-   - **Fail:** the **Budget Manager** checks the remaining budget. If budget remains, the orchestrator retries with the evaluator's feedback. If not, a fallback response goes through Output Guardrails.
 
 ## Technology Summary
 
