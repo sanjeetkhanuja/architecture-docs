@@ -1,0 +1,263 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram id="ingest-enrich-azure" name="Data Ingestion and Enrichment - Azure">
+    <mxGraphModel dx="3128" dy="707" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="actor" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Data Ingestion Engineer" vertex="1">
+          <mxGeometry height="60" width="30" x="20" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="ui" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Data Management App UI" vertex="1">
+          <mxGeometry height="60" width="120" x="90" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="pipes" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" value="Data Ingestion Pipelines&#xa;(external systems)" vertex="1">
+          <mxGeometry height="60" width="120" x="90" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="idp" parent="1" style="rounded=0;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;dashed=1;" value="Microsoft Entra ID&#xa;(SSO / OIDC)" vertex="1">
+          <mxGeometry height="50" width="130" x="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gw" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Azure API Management&#xa;+ Application Gateway&#xa;&#xa;AuthN / AuthZ&#xa;Rate limiting&#xa;TLS" vertex="1">
+          <mxGeometry height="280" width="130" x="260" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Ingestion APIs" vertex="1">
+          <mxGeometry height="70" width="140" x="440" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="gcs" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" value="Azure Blob Storage&#xa;(raw, immutable, versioned)" vertex="1">
+          <mxGeometry height="65" width="160" x="640" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="valid" parent="1" style="rounded=0;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;dashed=1;" value="File Validation&#xa;format, size, checksum,&#xa;malware scan (Defender&#xa;for Storage)" vertex="1">
+          <mxGeometry height="70" width="160" x="640" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="quar" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;dashed=1;" value="Quarantine Container" vertex="1">
+          <mxGeometry height="55" width="160" x="640" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="meta" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Metadata Service&#xa;(file and job state)" vertex="1">
+          <mxGeometry height="70" width="160" x="640" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="dbmeta" parent="1" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Azure Database for PostgreSQL&#xa;(metadata and job status)" vertex="1">
+          <mxGeometry height="95" width="140" x="650" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="metanote" parent="1" style="rounded=0;whiteSpace=wrap;align=left;spacingLeft=6;fillColor=#fffde7;strokeColor=#d6b656;fontSize=10;" value="Metadata record:&#xa;File ID, Upload timestamp,&#xa;Well ID, File location,&#xa;Uploaded By,&#xa;+ File type, checksum, status" vertex="1">
+          <mxGeometry height="95" width="190" x="440" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="dlq" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" value="Service Bus&#xa;Dead-letter Queue" vertex="1">
+          <mxGeometry height="60" width="140" x="860" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="pubsub" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" value="Azure Service Bus&#xa;(ingestion events)" vertex="1">
+          <mxGeometry height="70" width="140" x="860" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="airflow" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;fontSize=10;" value="Ingestion Service&#xa;invoking Airflow&#xa;(routes by file type)&#xa;ADF Workflow Orchestration Manager" vertex="1">
+          <mxGeometry height="80" width="160" x="1040" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="dfs" parent="1" style="swimlane;whiteSpace=wrap;startSize=28;fillColor=#fff4e6;strokeColor=#d79b00;fontStyle=1;fontSize=11;" value="Kubernetes" vertex="1">
+          <mxGeometry height="380" width="420" x="1260" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ing_json" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontSize=10;" value="JSON Ingestor&#xa;(K8S)" vertex="1">
+          <mxGeometry height="60" width="150" x="20" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ing_csv" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontSize=10;" value="CSV Ingestor&#xa;(K8S)" vertex="1">
+          <mxGeometry height="60" width="150" x="20" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="ing_las" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="LAS Ingestor&#xa;(K8S)" vertex="1">
+          <mxGeometry height="60" width="150" x="20" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="st_tr" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Transform" vertex="1">
+          <mxGeometry height="60" width="150" x="240" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="st_dq" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;dashed=1;" value="Data Quality Checks&#xa;(schema, units, ranges)" vertex="1">
+          <mxGeometry height="60" width="150" x="240" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="st_en" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Enrichment" vertex="1">
+          <mxGeometry height="60" width="150" x="240" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="st_ld" parent="dfs" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Load&#xa;(idempotent upsert)" vertex="1">
+          <mxGeometry height="60" width="150" x="240" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="s0" edge="1" parent="dfs" source="ing_json" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="st_tr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" edge="1" parent="dfs" source="ing_csv" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="st_tr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" edge="1" parent="dfs" source="ing_las" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="st_tr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" edge="1" parent="dfs" source="st_tr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="st_dq" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" edge="1" parent="dfs" source="st_dq" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="st_en" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" edge="1" parent="dfs" source="st_en" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="st_ld" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ref" parent="1" style="rounded=0;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;dashed=1;" value="Reference Data&#xa;(well master, units, CRS)" vertex="1">
+          <mxGeometry height="60" width="110" x="1720" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="dbpg" parent="1" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Azure Database for PostgreSQL&#xa;(curated data)" vertex="1">
+          <mxGeometry height="95" width="120" x="1870" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="dbdbx" parent="1" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Azure Databricks&#xa;(Delta Lake tables:&#xa;logs, large tables)" vertex="1">
+          <mxGeometry height="95" width="120" x="1870" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="dfd" parent="1" style="swimlane;whiteSpace=wrap;startSize=28;fillColor=#fff4e6;strokeColor=#d79b00;fontStyle=1;fontSize=11;" value="Kubernetes" vertex="1">
+          <mxGeometry height="400" width="420" x="1260" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="oc" parent="dfd" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="OCR Ingestion&#xa;(K8S)" vertex="1">
+          <mxGeometry height="50" width="150" x="135" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="da" parent="dfd" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Azure AI&#xa;Document Intelligence" vertex="1">
+          <mxGeometry height="50" width="150" x="135" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="ch" parent="dfd" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Chunking" vertex="1">
+          <mxGeometry height="50" width="150" x="135" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="em" parent="dfd" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Generate Embedding" vertex="1">
+          <mxGeometry height="50" width="150" x="135" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="vi" parent="dfd" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" value="Vector Ingestion&#xa;(idempotent upsert)" vertex="1">
+          <mxGeometry height="50" width="150" x="135" y="325" as="geometry" />
+        </mxCell>
+        <mxCell id="d0" edge="1" parent="dfd" source="oc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="da" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" edge="1" parent="dfd" source="da" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="ch" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" edge="1" parent="dfd" source="ch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="em" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" edge="1" parent="dfd" source="em" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="vi" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="llm" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;dashed=1;" value="LLM Gateway&#xa;(embedding models:&#xa;OpenAI)" vertex="1">
+          <mxGeometry height="70" width="150" x="1040" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="dbmv" parent="1" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" value="Milvus on AKS&#xa;(vector store)" vertex="1">
+          <mxGeometry height="95" width="120" x="1870" y="822" as="geometry" />
+        </mxCell>
+        <mxCell id="cons" parent="1" style="rounded=0;whiteSpace=wrap;align=left;spacingLeft=6;fillColor=#fffde7;strokeColor=#d6b656;fontSize=10;" value="Read by Conversational Insights&#xa;(MCP data servers, read-only)" vertex="1">
+          <mxGeometry height="70" width="170" x="1850" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="obs" parent="1" style="rounded=0;whiteSpace=wrap;fillColor=#e6e6e6;strokeColor=#666666;fontStyle=1;dashed=1;" value="Observability and Audit - Grafana, Prometheus, Loki, Thanos, AlertManager" vertex="1">
+          <mxGeometry height="50" width="2000" x="20" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="actor" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="ui" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;entryX=0;entryY=0.3214;entryDx=0;entryDy=0;" target="gw" value="HTTPS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="pipes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;entryX=0;entryY=0.8214;entryDx=0;entryDy=0;" target="gw" value="API calls">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="idp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" target="gw" value="authenticate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3214;exitDx=0;exitDy=0;" target="api" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="gcs" value="upload file ">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="610" y="250" />
+              <mxPoint x="610" y="132" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="meta" value="generate metadata">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="610" y="250" />
+              <mxPoint x="610" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="gcs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="valid" value="blob created (Event Grid)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="pubsub" value="validated">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#b85450;fontColor=#b85450;fontStyle=1;dashed=1;" target="quar" value="invalid / infected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="meta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="dbmeta" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="pubsub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" target="dlq" value="failed after retries">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="pubsub" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="airflow" value="trigger">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="meta" value="job status">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1072" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="ing_json" value="JSON">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1220" y="250" />
+              <mxPoint x="1220" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="ing_csv" value="CSV">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="ing_las" value="LAS">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1220" y="250" />
+              <mxPoint x="1220" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="airflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="oc" value="PDF / scanned docs / images">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s6" edge="1" parent="1" source="ref" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" target="st_en" value="lookup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" edge="1" parent="1" source="st_ld" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dbpg" value="upsert">
+          <mxGeometry relative="1" x="0.2258" y="8" as="geometry">
+            <mxPoint x="1" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s8" edge="1" parent="1" source="st_ld" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dbdbx" value="upsert ">
+          <mxGeometry relative="1" x="0.0992" y="-20" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s9" edge="1" parent="1" source="dfs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="dlq" value="failed records">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1470" y="60" />
+              <mxPoint x="930" y="60" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d4" edge="1" parent="1" source="llm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="em" value="embeddings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" edge="1" parent="1" source="vi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dbmv" value="upsert">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c_bq" edge="1" parent="1" source="cons" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=0.4706;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="dbdbx" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c_mv" edge="1" parent="1" source="cons" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=0.4706;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="dbmv" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
