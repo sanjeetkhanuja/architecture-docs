@@ -34,6 +34,48 @@ Key design principles:
 
 *Source: [`Ingestion_Enrichment_Azure_Architecture.drawio`](Ingestion_Enrichment_Azure_Architecture.drawio)*
 
+## Deployment Architecture
+
+![Data Management App and Backend Services - Multi-Cloud Deployment (GCP Primary, Azure Secondary)](Deployment_Architecture.png)
+
+*Source: [`Deployment_Architecture.drawio`](Deployment_Architecture.drawio)*
+
+The Data Management App and the Backend Services are deployed across both clouds. GCP is the primary cloud and carries all normal traffic. Azure is the secondary cloud: it runs with a minimum resource configuration and receives traffic only if GCP is unavailable.
+
+### Overview
+
+- **Application.** The Data Management App is an Angular single-page UI. Users sign in through Microsoft Azure Entra ID (OIDC / SSO). The Backend Services are also exposed as a REST API, so other applications can call them directly.
+- **Multi-cloud with DNS failover.** The primary DNS value points to the GCP global load balancer and the secondary value points to the Azure global load balancer. If the GCP load balancer is not reachable, requests go to Azure.
+- **Two regions in each cloud.** The UI and the backend run in a US region and an EU region on both clouds. A global load balancer routes each request to the correct region using region affinity. In Azure, an Application Gateway in each region receives the traffic. In GCP, an ingress gateway does the same.
+- **Kubernetes.** In every region, the UI and the Backend Services run in a Kubernetes (K8S) cluster. Azure's clusters are kept at minimum resources.
+- **Cloud-agnostic by default.** Kubernetes, Postgres and the observability stack are the same on both clouds. Only eventing and object storage are cloud-native: Pub/Sub and GCS on GCP, Service Bus and Blob Storage on Azure.
+- **Postgres in the US only.** Postgres runs in the US region of each cloud. The EU backends read and write it across regions. A nightly sync copies data from GCP Postgres to Azure Postgres so the secondary stays in step.
+- **Observability.** Prometheus and Loki collect metrics and logs in each cluster. Grafana, Thanos and Alert Manager provide dashboards, a global metrics view and alerting in each cloud.
+
+### Deployment at a glance
+
+| Aspect | GCP (primary) | Azure (secondary) |
+|---|---|---|
+| Role | Active, receives all normal traffic | Standby, receives traffic only if GCP is unavailable |
+| DNS | Primary value | Secondary value |
+| Global load balancing | GCP Global Load Balancer (region affinity) | Azure Global Load Balancer (region affinity) |
+| Regional entry | Ingress Gateway (US, EU) | Application Gateway (US, EU) |
+| Regions | US and EU | US and EU |
+| Compute | Kubernetes cluster per region | Kubernetes cluster per region, minimum resources |
+| Eventing | Pub/Sub | Service Bus |
+| Object storage | GCS | Azure Blob Storage |
+| Postgres | Primary, US region only | Secondary, US region only, refreshed by the nightly sync |
+| Observability | Prometheus, Loki, Grafana, Thanos, Alert Manager | Prometheus, Loki, Grafana, Thanos, Alert Manager |
+
+### Request routing and failover
+
+1. A user opens the Data Management App, or another application calls the REST API. Both use the same DNS name.
+2. DNS resolves to the GCP global load balancer (primary value). The user signs in through Microsoft Azure Entra ID.
+3. The global load balancer sends the request to the US or EU region using region affinity. The regional gateway forwards it to the UI or the Backend Services in that region's Kubernetes cluster.
+4. The Backend Services read and write Postgres in the US region. EU backends make this call across regions.
+5. If the GCP load balancer is not reachable, DNS returns the secondary value and requests go to the Azure global load balancer. They follow the same routing through the Azure regions.
+6. A nightly sync from GCP Postgres to Azure Postgres keeps the Azure data in step with GCP.
+
 ## Patents
 
 The framework and its workflows are covered by the following patents:

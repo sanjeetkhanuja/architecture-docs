@@ -1,0 +1,236 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6">
+  <diagram id="deploy" name="Deployment Architecture">
+    <mxGraphModel dx="1028" dy="707" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="entra" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#DEEBFF;strokeColor=#0078D4;fontSize=10;" value="Microsoft Azure Entra ID" vertex="1">
+          <mxGeometry height="45" width="190" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="users" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F5F5F5;strokeColor=#666666;" value="Users" vertex="1">
+          <mxGeometry height="45" width="190" x="60" y="135" as="geometry" />
+        </mxCell>
+        <mxCell id="apps" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F5F5F5;strokeColor=#666666;" value="Other Applications&lt;br&gt;(REST API consumers)" vertex="1">
+          <mxGeometry height="45" width="190" x="60" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="dns" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" value="DNS&lt;br&gt;Primary value: GCP Global Load Balancer&lt;br&gt;Secondary value: Azure Global Load Balancer" vertex="1">
+          <mxGeometry height="120" width="280" x="400" y="114" as="geometry" />
+        </mxCell>
+        <mxCell id="notes" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=11;spacingLeft=8;spacingTop=4;fillColor=#FFFDE7;strokeColor=#D6B656;" value="&lt;b&gt;Key design points&lt;/b&gt;&lt;br&gt;• DNS primary value points to GCP; secondary value points to Azure. If the GCP load balancer is not reachable, requests go to Azure.&lt;br&gt;• UI and backend run in two regions (US and EU) in both clouds; the global load balancer uses region affinity.&lt;br&gt;• Cloud-agnostic components (Kubernetes, Postgres, observability stack) are used wherever possible. Eventing and object storage are cloud-native.&lt;br&gt;• Postgres runs in the US region only; a nightly sync copies GCP Postgres to Azure Postgres.&lt;br&gt;• Azure is the secondary cloud: minimum resource configuration, receives traffic only when GCP is unavailable." vertex="1">
+          <mxGeometry height="105" width="750" x="1290" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="gcp" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#E8F0FE;strokeColor=#4285F4;" value="Google Cloud Platform (GCP) - PRIMARY (Active)" vertex="1">
+          <mxGeometry height="700" width="980" x="40" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="g_lb" parent="gcp" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" value="GCP Global Load Balancer&lt;br&gt;(region affinity)" vertex="1">
+          <mxGeometry height="45" width="480" x="240" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us" parent="gcp" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#FFFFFF;strokeColor=#4285F4;" value="US Region" vertex="1">
+          <mxGeometry height="400" width="460" x="20" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us_gw" parent="g_us" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;" value="Ingress Gateway (US)" vertex="1">
+          <mxGeometry height="40" width="420" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us_k8s" parent="g_us" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#F7F9FC;strokeColor=#326CE5;startSize=28;" value="Kubernetes Cluster (K8S)" vertex="1">
+          <mxGeometry height="200" width="420" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us_ui" parent="g_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F8D7DA;strokeColor=#DD0031;" value="Data Management App&lt;br&gt;(Angular UI)" vertex="1">
+          <mxGeometry height="70" width="150" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us_be" parent="g_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="Backend Services&lt;br&gt;(REST API)" vertex="1">
+          <mxGeometry height="70" width="150" x="250" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_us_obs" parent="g_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;" value="Prometheus + Loki&lt;br&gt;(metrics and logs)" vertex="1">
+          <mxGeometry height="50" width="380" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pg" parent="g_us" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" value="Postgres&lt;br&gt;(primary, US region only)" vertex="1">
+          <mxGeometry height="70" width="180" x="240" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu" parent="gcp" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#FFFFFF;strokeColor=#4285F4;" value="EU Region" vertex="1">
+          <mxGeometry height="400" width="460" x="510" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu_gw" parent="g_eu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;" value="Ingress Gateway (EU)" vertex="1">
+          <mxGeometry height="40" width="420" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu_k8s" parent="g_eu" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#F7F9FC;strokeColor=#326CE5;startSize=28;" value="Kubernetes Cluster (K8S)" vertex="1">
+          <mxGeometry height="200" width="420" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu_ui" parent="g_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F8D7DA;strokeColor=#DD0031;" value="Data Management App&lt;br&gt;(Angular UI)" vertex="1">
+          <mxGeometry height="70" width="140" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu_be" parent="g_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="Backend Services&lt;br&gt;(REST API)" vertex="1">
+          <mxGeometry height="70" width="150" x="250" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="g_eu_obs" parent="g_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;" value="Prometheus + Loki&lt;br&gt;(metrics and logs)" vertex="1">
+          <mxGeometry height="50" width="380" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="g_ev" parent="gcp" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" value="GCP Pub/Sub (eventing)   |   GCS (object storage)" vertex="1">
+          <mxGeometry height="50" width="920" x="40" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="g_og" parent="gcp" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" value="Observability: Grafana (dashboards)  |  Thanos (global metrics view)  |  Alert Manager (alerts)" vertex="1">
+          <mxGeometry height="50" width="920" x="40" y="635" as="geometry" />
+        </mxCell>
+        <mxCell id="az" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#E6F2FB;strokeColor=#0078D4;dashed=1;" value="Microsoft Azure - SECONDARY (Standby, minimum resource configuration)" vertex="1">
+          <mxGeometry height="700" width="980" x="1060" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="a_lb" parent="az" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;fontStyle=1;" value="Azure Global Load Balancer&lt;br&gt;(region affinity)" vertex="1">
+          <mxGeometry height="45" width="480" x="240" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us" parent="az" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#FFFFFF;strokeColor=#0078D4;" value="US Region" vertex="1">
+          <mxGeometry height="400" width="460" x="20" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us_gw" parent="a_us" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;" value="Application Gateway (US)" vertex="1">
+          <mxGeometry height="40" width="420" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us_k8s" parent="a_us" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#F7F9FC;strokeColor=#326CE5;startSize=28;" value="Kubernetes Cluster (K8S) - minimum resources" vertex="1">
+          <mxGeometry height="200" width="420" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us_ui" parent="a_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F8D7DA;strokeColor=#DD0031;" value="Data Management App&lt;br&gt;(Angular UI)" vertex="1">
+          <mxGeometry height="70" width="180" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us_be" parent="a_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="Backend Services&lt;br&gt;(REST API)" vertex="1">
+          <mxGeometry height="70" width="180" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_us_obs" parent="a_us_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;" value="Prometheus + Loki&lt;br&gt;(metrics and logs)" vertex="1">
+          <mxGeometry height="50" width="380" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="a_pg" parent="a_us" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" value="Postgres&lt;br&gt;(secondary, US region only)" vertex="1">
+          <mxGeometry height="70" width="180" x="240" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu" parent="az" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#FFFFFF;strokeColor=#0078D4;" value="EU Region" vertex="1">
+          <mxGeometry height="400" width="460" x="510" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu_gw" parent="a_eu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFE6CC;strokeColor=#D79B00;" value="Application Gateway (EU)" vertex="1">
+          <mxGeometry height="40" width="420" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu_k8s" parent="a_eu" style="swimlane;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;startSize=30;fillColor=#F7F9FC;strokeColor=#326CE5;startSize=28;" value="Kubernetes Cluster (K8S) - minimum resources" vertex="1">
+          <mxGeometry height="200" width="420" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu_ui" parent="a_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#F8D7DA;strokeColor=#DD0031;" value="Data Management App&lt;br&gt;(Angular UI)" vertex="1">
+          <mxGeometry height="70" width="180" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu_be" parent="a_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="Backend Services&lt;br&gt;(REST API)" vertex="1">
+          <mxGeometry height="70" width="180" x="220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a_eu_obs" parent="a_eu_k8s" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;" value="Prometheus + Loki&lt;br&gt;(metrics and logs)" vertex="1">
+          <mxGeometry height="50" width="380" x="20" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="a_ev" parent="az" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" value="Azure Service Bus (eventing)   |   Azure Blob Storage (object storage)" vertex="1">
+          <mxGeometry height="50" width="920" x="40" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="a_og" parent="az" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;arcSize=12;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" value="Observability: Grafana (dashboards)  |  Thanos (global metrics view)  |  Alert Manager (alerts)" vertex="1">
+          <mxGeometry height="50" width="920" x="40" y="635" as="geometry" />
+        </mxCell>
+        <mxCell id="e_u_dns" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" target="dns" value="HTTPS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a_dns" edge="1" parent="1" source="apps" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" target="dns" value="REST API (HTTPS)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_u_entra" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" target="entra" value="sign in (OIDC)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dns_g" edge="1" parent="1" source="dns" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontStyle=1;" target="g_lb" value="primary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dns_a" edge="1" parent="1" source="dns" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;exitX=1;exitY=0.3;entryX=0.5;entryY=0;" target="a_lb" value="secondary: used only if GCP LB is unreachable">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1540" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g_e_lb_us" edge="1" parent="1" source="g_lb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_us_gw" value="US traffic">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="430" />
+              <mxPoint x="290" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g_e_lb_eu" edge="1" parent="1" source="g_lb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_eu_gw" value="EU traffic">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="430" />
+              <mxPoint x="780" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g_e_gw_us" edge="1" parent="1" source="g_us_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_us_k8s" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_ui_us" edge="1" parent="1" source="g_us_ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_us_be" value="REST">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_gw_eu" edge="1" parent="1" source="g_eu_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_eu_k8s" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_ui_eu" edge="1" parent="1" source="g_eu_ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="g_eu_be" value="REST">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_be_pg" edge="1" parent="1" source="g_us_be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="g_pg" value="SQL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_eu_pg" edge="1" parent="1" source="g_eu_be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=1;entryY=0.35;entryDx=0;entryDy=0;dashed=1;" target="g_pg" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g_e_k8s_ev_us" edge="1" parent="1" source="g_us_k8s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.1;exitY=1;entryX=0.0457;entryY=0;" target="g_ev" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g_e_k8s_ev_eu" edge="1" parent="1" source="g_eu_k8s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.9;exitY=1;entryX=0.9435;entryY=0;" target="g_ev" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_lb_us" edge="1" parent="1" source="a_lb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" target="a_us_gw" value="US traffic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_lb_eu" edge="1" parent="1" source="a_lb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;dashed=1;" target="a_eu_gw" value="EU traffic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_gw_us" edge="1" parent="1" source="a_us_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="a_us_k8s" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_ui_us" edge="1" parent="1" source="a_us_ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="a_us_be" value="REST">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_gw_eu" edge="1" parent="1" source="a_eu_gw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="a_eu_k8s" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_ui_eu" edge="1" parent="1" source="a_eu_ui" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;" target="a_eu_be" value="REST">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_be_pg" edge="1" parent="1" source="a_us_be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="a_pg" value="SQL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_eu_pg" edge="1" parent="1" source="a_eu_be" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=1;entryY=0.35;entryDx=0;entryDy=0;dashed=1;" target="a_pg" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1900" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a_e_k8s_ev_us" edge="1" parent="1" source="a_us_k8s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.1;exitY=1;entryX=0.0457;entryY=0;" target="a_ev" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a_e_k8s_ev_eu" edge="1" parent="1" source="a_eu_k8s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=0.9;exitY=1;entryX=0.9435;entryY=0;" target="a_ev" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sync" edge="1" parent="1" source="g_pg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=10;labelBackgroundColor=#ffffff;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;strokeColor=#6A1B9A;strokeWidth=2;" target="a_pg" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t_sync" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#6A1B9A;" value="nightly sync: GCP Postgres to Azure Postgres" vertex="1">
+          <mxGeometry height="20" width="340" x="540" y="826" as="geometry" />
+        </mxCell>
+        <mxCell id="t_xdb" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#333333;" value="EU backend reads/writes Postgres in US region" vertex="1">
+          <mxGeometry height="20" width="340" x="500" y="772" as="geometry" />
+        </mxCell>
+        <mxCell id="t_xdb2" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#333333;" value="EU backend reads/writes Postgres in US region" vertex="1">
+          <mxGeometry height="20" width="340" x="1520" y="772" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
