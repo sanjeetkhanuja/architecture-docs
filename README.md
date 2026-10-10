@@ -9,10 +9,6 @@ Architecture and design documentation for enterprise AI and data platforms I hav
 | [**Conversational Insights**](Conversational_Insights/) | An AI agent platform that lets data scientists ask questions in natural language and get answers from complex subsurface data. | Multi-agent design on LangGraph, every agent and data source exposed through MCP, hybrid retrieval (SQL, vector search and logs), guardrails on input and output, and budget-bounded self-correction. |
 | [**Data Ingestion and Enrichment Pipelines**](Ingestion_Enrichment_Pipelines/) | A cloud-native framework and portal that ingests Exploration and Production (E&P) data and turns it into standardized Well-Known Entities. | Delivered on both **Google Cloud and Microsoft Azure**. Event-driven, validated and idempotent, with separate paths for structured data and for documents (OCR, embeddings and vector search). |
 
-## How the projects fit together
-
-The ingestion pipelines bring raw E&P data in, validate and enrich it, and load it into curated stores (Postgres, a large-table store and Milvus). Conversational Insights reads those stores, read-only, to answer natural-language questions. Together they cover the path from raw files to answers.
-
 ## Patents
 
 The ingestion framework and its workflows are covered by two patents:
@@ -25,7 +21,6 @@ The ingestion framework and its workflows are covered by two patents:
 - **Multi-cloud delivery:** the same architecture implemented on GCP and Azure.
 - **Agentic AI and RAG:** LangGraph orchestration, Model Context Protocol, and LLM gateways routing across hosted and self-hosted models.
 - **Data platform engineering:** event-driven ingestion, data quality, enrichment, and vector, relational and analytical stores.
-- **Governance and safety:** guardrails, read-only data access, quarantine of unsafe files, audit and observability.
 
 ## Repository layout
 
