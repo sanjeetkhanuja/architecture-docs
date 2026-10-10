@@ -18,61 +18,9 @@ Key design principles:
 
 ## Architecture Diagram
 
-The overview below is rendered by GitHub. The full, editable diagram is [`diagrams/Conversational_Insights_Architecture.drawio`](diagrams/Conversational_Insights_Architecture.drawio) (open it with [draw.io](https://app.diagrams.net) or the VS Code draw.io extension).
+![Conversational Insights architecture](Conversational_Insights_Architecture.png)
 
-```mermaid
-flowchart LR
-    U([Data Scientist]) <-->|query / search results| APP["DM Conversational<br/>Insights App"]
-    APP --> IG["Input Guardrails"]
-    IG -->|approved| ORCH["Agent Orchestrator<br/>(LangGraph)"]
-    IG -. blocked .-> APP
-
-    APP <--> LTM[("MongoDB<br/>Long-term memory<br/>Conversation History")]
-    ORCH <--> LTM
-    ORCH <--> STM["Short-term memory<br/>(session store)"]
-    ORCH <--> BM["Budget Manager"]
-
-    ORCH -->|dispatch| MCPGW["MCP Gateway<br/>+ MCP Registry"]
-
-    subgraph MCPL["MCP Layer"]
-        subgraph AGS["Agent MCP Servers"]
-            SG["SQL Query Generator<br/>(Mistral)"]
-            SE["SQL Query Executor<br/>(Mistral)"]
-            SS["Semantic Search Agent<br/>(OpenAI / Gemini)"]
-            LG["Log Generator Agent"]
-        end
-        subgraph DSS["Data MCP Servers"]
-            PGS["Postgres Server"] --> GUARD["SQL Guard"]
-            MVS["Milvus Server"]
-            LGS["Log Viewer Server"]
-        end
-        SE --> PGS
-        SS --> MVS
-        LG --> LGS
-    end
-
-    MCPGW <--> AGS
-    GUARD --> PG[("Postgres")]
-    MVS --> MV[("Milvus")]
-    LGS --> BQ[("BigQuery")]
-
-    AGS -->|agent results| AGG["Aggregator Agent"]
-    AGG --> EVAL["Evaluator Agent"]
-    EVAL -->|pass| OG["Output Guardrails"]
-    OG -->|search results| APP
-    EVAL -->|fail| BM
-    BM -->|retry with feedback| ORCH
-    BM -->|budget exhausted| OG
-
-    LLMGW["LLM Gateway"]
-    ORCH --> LLMGW
-    AGS --> LLMGW
-    AGG --> LLMGW
-    EVAL --> LLMGW
-    LLMGW --> OAI["OpenAI models"]
-    LLMGW --> GEM["Google Gemini models"]
-    LLMGW --> MIS["Mistral models<br/>(self-hosted)"]
-```
+*Source: [`Conversational_Insights_Architecture.drawio`](Conversational_Insights_Architecture.drawio). Edit the draw.io file and re-export the PNG when the architecture changes.*
 
 ## Components
 
@@ -134,7 +82,7 @@ Distributed tracing, token and cost metrics and an audit log cover all component
 2. **Input Guardrails** validate the request. A blocked request returns to the app with a message.
 3. The **Agent Orchestrator** loads short-term and long-term memory, plans the work and dispatches tasks through the **MCP Gateway**.
 4. The specialist agents run through their MCP interfaces:
-   - **Semantic Search** retrieves relevant content and schema context from Milvus.
+   - **Hybrid Search** retrieves relevant content and schema context from Milvus by combining semantic search with BM25-based keyword search.
    - **SQL Generator** produces SQL, and **SQL Executor** runs it on Postgres behind the SQL Guard.
    - **Log Generator** reads logs from BigQuery when log analysis is needed.
 5. The **Aggregator Agent** combines the agent results into a single answer.
@@ -152,6 +100,6 @@ Distributed tracing, token and cost metrics and an audit log cover all component
 | Structured data | Postgres |
 | Vector search / RAG | Milvus |
 | Logs | BigQuery |
-| Conversation memory | MongoDB (long-term), session store (short-term) |
+| Conversation memory | MongoDB (long-term), Redis (short-term) |
 
 
