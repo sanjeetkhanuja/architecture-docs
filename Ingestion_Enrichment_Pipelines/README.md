@@ -2,7 +2,7 @@
 
 **Data Ingestion and Enrichment** is a cloud-native, highly scalable framework, with an accompanying Data Management Portal, for bringing Exploration and Production (E&P) data into one governed platform. It ingests data from diverse sources and formats, then transforms, validates and enriches it into standardized Well-Known Entities (WKEs). Domain experts can then search, discover and analyse millions of oil and gas domain entities through a unified platform. The curated data it produces is read by the [Conversational Insights](https://github.com/sanjeetkhanuja/architecture-docs/blob/main/Conversational_Insights/README.md) platform.
 
-**The solution is available on both Google Cloud Platform (GCP) and Microsoft Azure.** The two implementations follow the same architecture and processing flow and differ only in the managed services they use. A client running on either cloud can deploy the matching implementation.
+**The solution is available on both Google Cloud Platform (GCP) and Microsoft Azure.** The reference deployment described in [Deployment Architecture](#deployment-architecture-multi-cloud) goes further and runs the Data Management App and Backend Services across both clouds for resilience, with GCP as primary and Azure as standby.
 
 ## Architecture Overview
 
@@ -34,13 +34,13 @@ Key design principles:
 
 *Source: [`Ingestion_Enrichment_Azure_Architecture.drawio`](Ingestion_Enrichment_Azure_Architecture.drawio)*
 
-## Deployment Architecture
+## Deployment Architecture (Multi-Cloud)
 
 ![Data Management App and Backend Services - Multi-Cloud Deployment (GCP Primary, Azure Secondary)](Deployment_Architecture.png)
 
 *Source: [`Deployment_Architecture.drawio`](Deployment_Architecture.drawio)*
 
-The Data Management App and the Backend Services are deployed across both clouds. GCP is the primary cloud and carries all normal traffic. Azure is the secondary cloud: it runs with a minimum resource configuration and receives traffic only if GCP is unavailable.
+The reference deployment of the Data Management App and Backend Services spans both clouds in an active-passive setup. GCP is the primary cloud and carries all normal traffic. Azure is the secondary cloud: it runs with a minimum resource configuration and receives traffic only if GCP is unavailable. This is separate from the cloud-specific implementations above, which show how the ingestion and enrichment pipelines are built on each cloud's services.
 
 ### Overview
 
