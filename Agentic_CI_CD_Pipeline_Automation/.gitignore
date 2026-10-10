@@ -1,0 +1,4 @@
+# Ignore backup files
+*.bkp
+*.bak
+*~
