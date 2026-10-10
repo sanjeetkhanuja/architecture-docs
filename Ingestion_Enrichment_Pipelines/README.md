@@ -95,7 +95,7 @@ The relational framework patent describes accessing data generated during field 
 | Store | Content | GCP | Azure |
 |---|---|---|---|
 | **Curated relational data** | Standardized entities | Postgres | Postgres |
-| **Logs and large tables** | High-volume data | BigQuery | Azure Databricks (Delta Lake tables) |
+| **Logs and large tables** | High-volume data | BigQuery | Azure Databricks |
 | **Vector store** | Embeddings for semantic search | Milvus | Milvus |
 
 These stores are read, read-only, by the Conversational Insights MCP data servers.
@@ -134,7 +134,7 @@ Grafana, Prometheus, Loki, Thanos and AlertManager cover distributed tracing, me
 | Processing | Dataflow, Cloud Run (GCP); Kubernetes (Azure) |
 | Messaging | Pub/Sub (GCP); Service Bus (Azure) |
 | Structured data | Postgres |
-| Logs and large tables | BigQuery (GCP); Databricks with Delta Lake (Azure) |
+| Logs and large tables | BigQuery (GCP); Databricks (Azure) |
 | Vector search | Milvus |
 | Document processing | GCP Document AI (GCP); Azure AI Document Intelligence (Azure) |
 | Embeddings | OpenAI, Gemini (GCP); OpenAI (Azure) |
