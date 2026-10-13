@@ -1,5 +1,7 @@
 # Data Management Conversational Insights
 
+[Download document in pdf format](Conversational_Insights_Documentation.pdf)
+
 **Conversational Insights** is an AI-driven, agent-based platform that lets data scientists ask questions in natural language and get insights from complex subsurface data. It combines large language models (LLMs), retrieval-augmented generation (RAG) and orchestration frameworks (LangGraph, Model Context Protocol) to coordinate retrieval, reasoning and response generation across structured and unstructured data sources.
 
 ## Architecture Overview
