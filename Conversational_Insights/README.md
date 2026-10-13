@@ -20,7 +20,7 @@ Key design principles:
 
 ![Conversational Insights architecture](Conversational_Insights_Architecture.png)
 
-*Source: [`Conversational_Insights_Architecture.drawio`](Conversational_Insights_Architecture.drawio). Edit the draw.io file and re-export the PNG when the architecture changes.*
+*Source: [`Conversational_Insights_Architecture.drawio`](Conversational_Insights_Architecture.drawio).*
 
 ## Request Flow
 
