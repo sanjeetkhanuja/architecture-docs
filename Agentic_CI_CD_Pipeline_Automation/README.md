@@ -92,7 +92,7 @@ flowchart LR
 | - | ----- | ------------ |
 | 01 | Classify | Repository type: .NET Core 6/7/8, .NET Framework 4.8, Node, Python, Spring. Uses file-system signals, no LLM. |
 | 02 | Discover | Framework SDK, version, build tool, Helm path, test framework. |
-| 03 | Unit test | Run the .NET tests and generate a coverage report. |
+| 03 | Unit test | Run the tests and generate a coverage report. |
 | 04 | Security scans | Inject SAST, SCA, DAST and container scans into the pipeline. |
 | 05 | Generate CI YAML | Render the Helm chart and pipeline YAML from a Jinja2 template, then lint and validate them. |
 | 06 | Push and open MR | Push the branch and open an MR for human review. It is never auto-merged. |
