@@ -163,7 +163,7 @@ flowchart LR
 
 ## Security Remediation Agent
 
-Pilot scope covers SCA and SAST findings. The flow is: open finding → triage → auto-generated PR → human review → merge decision.
+The flow is: open finding → triage → auto-generated PR → human review → merge decision.
 
 | Component | Responsibility |
 | --------- | -------------- |
