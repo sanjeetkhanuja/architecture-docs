@@ -150,17 +150,6 @@ flowchart LR
     RB --> CH[("Channels<br/>rollback_log.json, exceptions.json")]
 ```
 
-### Registries
-
-| Registry | Contents |
-| -------- | -------- |
-| Strategy registry (default: blue-green) | blue-green, canary, rolling |
-| Gate registry (`deploy-catalog.json`) | health (blocking, `GET /health`), DAST (blocking, ZAP locally, Fortify stub), Playwright (blocking, ephemeral container). Default order: health → DAST → Playwright. |
-
-### Two Playwright stages, deliberately different
-
-The CD agent's Playwright gate is **blocking**. It runs at deploy time and its failure rolls the release back. The CI agent's Playwright E2E job is **non-blocking**. It runs inside the pipeline the CI agent authored, where the worst case is a blocked merge.
-
 ## Security Remediation Agent
 
 Pilot scope covers SCA and SAST findings. The flow is: open finding → triage → auto-generated PR → human review → merge decision.
@@ -172,8 +161,6 @@ Pilot scope covers SCA and SAST findings. The flow is: open finding → triage �
 | **Remediation Agent** | Auto-generates a fix and opens a PR with rationale for in-scope patterns (dependency / SCA uplifts). |
 | **Human-in-the-loop gate** | A reviewer approves before merge. |
 | **Audit log** | End-to-end logging across ingestion, triage, remediation and review, with pilot metrics captured. |
-
-For COBOL, the security scan uses the client-recommended toolset. DAST is not needed for AS400.
 
 ## Components
 
