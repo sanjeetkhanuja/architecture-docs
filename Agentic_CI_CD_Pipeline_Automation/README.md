@@ -62,6 +62,17 @@ flowchart LR
 5. When runtime stages are enabled, the cd-agent deploys, watches and gates the release. If all gates pass, GREEN is promoted. If a blocking gate fails, the release is rolled back and traffic stays on BLUE.
 6. The **Security Remediation Agent** ingests open findings, triages them, and opens a fix PR for in-scope patterns. A reviewer approves before merge.
 
+## Components
+
+### Agents
+
+| Agent | Role | 
+| ----- | ---- | 
+| **ci-agent** | Classifies a repo, generates and lints a CI pipeline, opens a PR / MR, watches the run, diagnoses and repairs failures | 
+| **cd-agent** | Authors a blue/green CD pipeline from the CI handoff, validates gate failure paths, raises one never-merged PR, runs runtime gates and rolls back on failure | 
+| **Security Remediation Agent** | Ingests, triages and remediates SCA / SAST findings behind a human review gate | 
+
+
 ## CI Agent
 
 Classifies a repo, generates a CI pipeline, watches it run, and diagnoses and repairs failures.
@@ -162,15 +173,6 @@ Pilot scope covers SCA and SAST findings. The flow is: open finding â†’ triage â
 | **Human-in-the-loop gate** | A reviewer approves before merge. |
 | **Audit log** | End-to-end logging across ingestion, triage, remediation and review, with pilot metrics captured. |
 
-## Components
-
-### Agents
-
-| Agent | Role | 
-| ----- | ---- | 
-| **ci-agent** | Classifies a repo, generates and lints a CI pipeline, opens a PR / MR, watches the run, diagnoses and repairs failures | 
-| **cd-agent** | Authors a blue/green CD pipeline from the CI handoff, validates gate failure paths, raises one never-merged PR, runs runtime gates and rolls back on failure | 
-| **Security Remediation Agent** | Ingests, triages and remediates SCA / SAST findings behind a human review gate | 
 
 ### Platform services
 
