@@ -14,16 +14,14 @@ Key design principles:
 
 - **One internal shape.** Every agent is a thin CLI / MCP entry point, then a `PipelineHarness` (retry, checkpoint / resume, structured logging), then a linear stage pipeline, then provider adapters for everything that leaves the process (git, deploy, scan, notify).
 - **Human in the loop, always.** Agents open PRs / MRs and never merge them. The CD agent raises exactly one never-merged PR, and low-confidence security findings go to manual review.
-- **Authoring is separate from running.** CD stages 1–5 only author and never touch a cluster. Stages 6–8 (deploy, watch, gate) are no-ops unless `CD_LOCAL_DEPLOY=1` and the run is not `--dry-run`. Each skipped stage still writes a "skipped" result.
 - **Deterministic first, LLM second.** Repository classification uses file-system signals with no LLM. Templates are Jinja2 and are selected from a library. The LLM (Claude API, planned / fallback) generates a template only when none matches, and diagnoses and patches failures.
 - **Blue/green by default.** Runtime gates run health, then DAST, then Playwright, and all of them block. A gate failure triggers an attributable rollback that is recorded the same way a success is.
-- **Single system of record.** Agents never talk to Postgres directly or to each other's internals. Every recorded execution goes through the **Unified API** over HTTPS with a scoped token.
 - **Bounded self-correction.** Failure repair is capped (lint-retry loop up to 3 attempts), then the agent escalates to a human.
 - **Auditable by default.** Every agent action (ingest, triage, remediation, review outcome, rollback) is logged for compliance review.
 
 ## Architecture Diagrams
 
-[![Agentic CI/CD Pipeline Automation architecture](Agentic_CICD_Pipeline_Automation_Architecture-1_-_Platform_Overview.jpg)](Agentic_CICD_Pipeline_Automation_Architecture-1_-_Platform_Overview.jpg)
+![Agentic CI/CD Pipeline Automation architecture](Agentic_CICD_Pipeline_Automation_Architecture-1_-_Platform_Overview.jpg)
 
 
 | Page | Title | What it shows |
@@ -32,7 +30,7 @@ Key design principles:
 | 2 | CI Agent | The ci-agent authoring flow (classify through repair) and the CI pipeline it generates, with the tools each stage uses |
 | 3 | CD Agent | The eight CD stages, authoring vs runtime, gates, rollback, providers, guardrails and the registries |
 | 4 | Security Remediation | Open finding → triage → auto-generated PR → human review → merge decision, with audit logging |
-| 5 | Delivery Targets | Per-stack delivery paths (AKS, IIS, Java + Spring, COBOL / AS400) and Dev → QA → Cert → Prod promotion |
+| 5 | Delivery Targets | Per-stack delivery paths (AKS, IIS, Java + Spring) and Dev → QA → Cert → Prod promotion |
 
 ### System overview
 
@@ -92,7 +90,7 @@ flowchart LR
 
 | # | Stage | What happens |
 | - | ----- | ------------ |
-| 01 | Classify | Repository type: .NET Core 6/7/8, .NET Framework 4.8, COBOL, Node, Python, Spring. Uses file-system signals, no LLM. |
+| 01 | Classify | Repository type: .NET Core 6/7/8, .NET Framework 4.8, Node, Python, Spring. Uses file-system signals, no LLM. |
 | 02 | Discover | Framework SDK, version, build tool, Helm path, test framework. |
 | 03 | Unit test | Run the .NET tests and generate a coverage report. |
 | 04 | Security scans | Inject SAST, SCA, DAST and container scans into the pipeline. |
@@ -114,10 +112,10 @@ Unit test results · SAST and DAST reports · SCA (dependency scanning) report �
 
 | Area | Tools |
 | ---- | ----- |
-| Test and coverage | GitLab, SonarQube, .NET SDK |
-| SAST / SCA | GitLab SAST and Dependency Scanning (implemented); Fortify ScanCentral and Sonatype Nexus IQ (scaffolded) |
-| SBOM and container scan | syft (CycloneDX SBOM), grype / trivy (CVE scan), GitLab Container Scanning (implemented); Wiz container scan (scaffolded) |
-| DAST | GitLab DAST (implemented, flagged CD only in the plugin registry); Fortify WebInspect (scaffolded) |
+| Test and coverage | SonarQube, .NET SDK |
+| SAST / SCA | Fortify ScanCentral and Sonatype Nexus IQ |
+| SBOM and container scan | syft (CycloneDX SBOM), grype / trivy (CVE scan), GitLab Container Scanning; Wiz container scan (scaffolded) |
+| DAST | Fortify WebInspect |
 | E2E | Playwright in an ephemeral container with automatic teardown |
 | CI YAML validation | yamllint, actionlint (GitHub Actions), `glab ci lint` (offline), GitLab CI Lint API (fallback), Python YAML parse (fallback) |
 | Helm | Helm lint validates the chart structure |
@@ -137,11 +135,10 @@ gather → resolve_template → render → validate → deliver → deploy → w
 | 3 | Render | `rendered/` | Per-app / per-env values and blue/green + health-gate manifests. |
 | 4 | Validate | `validate_result.json` | Confirms every gate's failure path routes to rollback. |
 | 5 | Deliver | `return_contract.json` | Raises exactly one never-merged PR for a human to approve. |
-| 6 | Deploy | `runtime_manifests/` | `kubectl apply`. No-op unless `CD_LOCAL_DEPLOY=1` and not `--dry-run`. |
+| 6 | Deploy | `runtime_manifests/` | `kubectl apply`. |
 | 7 | Watch | `watch_result.json` | Watches the rollout. |
 | 8 | Gate | `gate_result.json` | Health → DAST → Playwright, all blocking. |
 
-Stages 1–5 are authoring only and never touch a cluster (ADR-CD-001 v2). Stages 6–8 each still write a "skipped" result when they are no-ops.
 
 ```mermaid
 flowchart LR
@@ -157,19 +154,8 @@ flowchart LR
 
 | Registry | Contents |
 | -------- | -------- |
-| Strategy registry (default: blue-green) | blue-green (exposure: none, default), canary (exposure: subset), rolling (exposure: full) |
+| Strategy registry (default: blue-green) | blue-green, canary, rolling |
 | Gate registry (`deploy-catalog.json`) | health (blocking, `GET /health`), DAST (blocking, ZAP locally, Fortify stub), Playwright (blocking, ephemeral container). Default order: health → DAST → Playwright. |
-
-### Providers (profile-selected)
-
-| Profile | Providers |
-| ------- | --------- |
-| Local | local-argo (kubectl + Argo Rollouts on kind), gitea, prem-loki, mailhog |
-| Production | harness, argo-rollouts, gitlab, dynatrace-splunk, ses-acs |
-
-### Guardrails
-
-`no_self_merge` · `retry_cap ≤ 3` · `channel_separation` (the runtime `rollback_log.json` is kept apart from the audit-log `exceptions.json`) · local deploy is scoped to the local profile.
 
 ### Two Playwright stages, deliberately different
 
@@ -189,40 +175,15 @@ Pilot scope covers SCA and SAST findings. The flow is: open finding → triage �
 
 For COBOL, the security scan uses the client-recommended toolset. DAST is not needed for AS400.
 
-## Delivery Scope and Pilot Deliverables
-
-### CI/CD deployment: automation with zero touch
-
-| Activities | Deliverables |
-| ---------- | ------------ |
-| Build GitHub Actions CI pipelines for IIS .NET Legacy and AKS | End-to-end .NET pipeline pilot (Week 4 demo: CI + CD + rollback) |
-| Integrate Nexus artifact management for versioned deployments across all stacks | Nexus versioned artifact store for all three stacks |
-| Configure Harness CD for IIS app pool management, file deployment and config promotion | Automated rollback mechanism with forced-failure validation |
-| IaC scanning (AKS), secrets scanning (all repos) and Helm tag automation | Environment promotion strategy document (Dev → Prod) |
-| Environment promotion gates: Dev → QA → Cert → Prod with approval workflows | GitHub Actions pipeline templates reusable across the 1,400-repo full estate |
-| End-to-end CI/CD for AS400* | |
-
-### Security remediation
-
-| Activities | Deliverables |
-| ---------- | ------------ |
-| Confirm target app / repo and finding type (SCA / SAST); secure API / webhook access | Agentic pipeline demonstrated end to end: open finding → triage → auto-generated PR → human review → merge decision |
-| Build the findings ingestion pipeline (CWE / CVSS-tagged schema) | Triage agent output validated: severity and fix-pattern classification with confidence scoring |
-| Triage Agent: classify by severity and fix pattern; route low-confidence findings to manual review | Auto-remediation capability for vulnerability classes (dependency / SCA and SAST) and DAST review |
-| Remediation Agent: auto-generate a fix and open a PR with rationale | Full audit log of every agent action for compliance review |
-| Human-in-the-loop gate: reviewer approval before merge | Findings report with scale-readiness recommendation (more finding types, platforms and repos after the pilot) |
-| End-to-end audit logging; capture pilot metrics | |
-| Use the client-recommended toolset for COBOL security scan | |
-
 ## Components
 
 ### Agents
 
-| Agent | Role | Entry |
+| Agent | Role | 
 | ----- | ---- | ----- |
-| **ci-agent** | Classifies a repo, generates and lints a CI pipeline, opens a PR / MR, watches the run, diagnoses and repairs failures | CLI / MCP |
-| **cd-agent** | Authors a blue/green CD pipeline from the CI handoff, validates gate failure paths, raises one never-merged PR, runs runtime gates and rolls back on failure | CLI / MCP |
-| **Security Remediation Agent** | Ingests, triages and remediates SCA / SAST findings behind a human review gate | CLI / MCP |
+| **ci-agent** | Classifies a repo, generates and lints a CI pipeline, opens a PR / MR, watches the run, diagnoses and repairs failures | 
+| **cd-agent** | Authors a blue/green CD pipeline from the CI handoff, validates gate failure paths, raises one never-merged PR, runs runtime gates and rolls back on failure | 
+| **Security Remediation Agent** | Ingests, triages and remediates SCA / SAST findings behind a human review gate | 
 
 ### Platform services
 
@@ -243,18 +204,13 @@ For COBOL, the security scan uses the client-recommended toolset. DAST is not ne
 | Agent interface | CLI and Model Context Protocol (MCP) |
 | Pipeline templating | Jinja2 |
 | LLM | Claude API (planned / fallback) |
-| Source control | GitHub, GitLab, Gitea (local) |
+| Source control | GitHub, GitLab |
 | CI platforms | GitHub Actions, GitLab CI |
 | CD and progressive delivery | Harness CD, Argo Rollouts, kubectl, Helm |
-| Runtime targets | AKS, IIS, Java + Spring, COBOL / AS400 |
+| Runtime targets | AKS, IIS, Java + Spring |
 | Security | GitLab SAST / Dependency / Container / DAST, Fortify, Sonatype Nexus IQ, Wiz, SonarQube, syft, grype, trivy, ZAP |
 | Testing | Playwright, unit test and coverage tooling |
 | Artifacts | Nexus, Docker images, Helm charts, SBOM (CycloneDX) |
-| Observability and notify | Dynatrace, Splunk, Loki, SES / ACS, MailHog (local) |
-| System of record | Unified API + Postgres |
+| Observability and notify | Grafana, Loki |
 
-## Scope Notes
 
-- Synthetic test data and environment provisioning, and auto-remediation of test failures, are part of the programme scope. The supplied design pages do not detail them yet, so they are not drawn in the diagrams.
-- Some tools are marked **scaffold** in the plugin registry (Fortify, Sonatype, Wiz). They are wired into the design but not yet implemented.
-- Items marked with `*` (AS400 CI/CD) are flagged in the delivery plan.
