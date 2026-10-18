@@ -17,13 +17,6 @@ The ingestion framework and its workflows are covered by two patents:
 - [Geologic Formation Operations Framework](https://patents.google.com/patent/US20210026030A1/en)
 - [Geologic Formation Operations Relational Framework](https://patents.google.com/patent/US20210019351/en)
 
-## Themes across the work
-
-- **Multi-cloud delivery:** the same architecture implemented on GCP and Azure.
-- **Agentic AI and RAG:** LangGraph orchestration, Model Context Protocol, and LLM gateways routing across hosted and self-hosted models.
-- **Agentic DevSecOps:** CI/CD pipelines authored, delivered and repaired by agents, with security gates, auto-remediation, human-in-the-loop approval and a full audit trail.
-- **Data platform engineering:** event-driven ingestion, data quality, enrichment, and vector, relational and analytical stores.
-
 ## Repository layout
 
 ```
