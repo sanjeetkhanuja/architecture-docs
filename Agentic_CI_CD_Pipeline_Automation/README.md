@@ -21,7 +21,7 @@ Key design principles:
 
 ## Architecture Diagrams
 
-![Agentic CI/CD Pipeline Automation architecture](Agentic_CICD_Pipeline_Automation_Architecture-1_-_Platform_Overview.jpg)
+![Agentic CI/CD Pipeline Automation architecture](Agentic_CICD_Pipeline_Automation_Architecture-1.png)
 
 
 | Page | Title | What it shows |
@@ -180,7 +180,7 @@ For COBOL, the security scan uses the client-recommended toolset. DAST is not ne
 ### Agents
 
 | Agent | Role | 
-| ----- | ---- | ----- |
+| ----- | ---- | 
 | **ci-agent** | Classifies a repo, generates and lints a CI pipeline, opens a PR / MR, watches the run, diagnoses and repairs failures | 
 | **cd-agent** | Authors a blue/green CD pipeline from the CI handoff, validates gate failure paths, raises one never-merged PR, runs runtime gates and rolls back on failure | 
 | **Security Remediation Agent** | Ingests, triages and remediates SCA / SAST findings behind a human review gate | 
