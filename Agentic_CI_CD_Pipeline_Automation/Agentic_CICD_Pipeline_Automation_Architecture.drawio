@@ -1,12 +1,9 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.3.6 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.3.6" pages="5">
   <diagram id="p1" name="1 - Platform Overview">
-    <mxGraphModel dx="709" dy="488" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1720" pageHeight="1130" math="0" shadow="0">
+    <mxGraphModel dx="1028" dy="707" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1720" pageHeight="1130" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="p1-title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=20;fontStyle=1;" value="Agentic CI/CD Pipeline Automation — Platform Overview" vertex="1">
-          <mxGeometry height="36" width="1500" x="30" y="10" as="geometry" />
-        </mxCell>
         <mxCell id="p1-l1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;arcSize=2;fillColor=#fafafa;strokeColor=#999999;dashed=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;" value="&lt;b&gt;Actors &amp;amp; inputs&lt;/b&gt;" vertex="1">
           <mxGeometry height="370" width="250" x="30" y="60" as="geometry" />
         </mxCell>
